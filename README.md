@@ -13,7 +13,7 @@ fluxer-canary.inputs.nixpkgs.follows = "nixpkgs";
 ### Packages:
 ```nix
 environment.systemPackages = [
-  inputs.fluxer-canary.packages.${pkgs.system}.fluxer-canary
+  inputs.fluxer-canary.packages.${stdenv.hostPlatform.system}.fluxer-canary
 ];
 ```
 
