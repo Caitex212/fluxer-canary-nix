@@ -15,6 +15,17 @@
               sha256 = "0dmfzd3x652w5dr3h39bkzlxvq3vr3lmyg2sxslqrjnn19dl10bp";
             };
           };
+          extraInstallCommands = ''
+            mkdir -p $out/share/applications
+            cat > $out/share/applications/fluxer-canary.desktop << EOF
+            [Desktop Entry]
+            Name=Fluxer Canary
+            Exec=fluxer-canary
+            Icon=fluxer-canary
+            Type=Application
+            Categories=Network;
+            EOF
+          '';
         })
       ];
     };
