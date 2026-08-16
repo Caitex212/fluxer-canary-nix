@@ -8,10 +8,10 @@
     in {
       packages.${system}.fluxer-canary = pkgs.appimageTools.wrapType2 {
         pname = "fluxer-canary";
-        version = "2026.602.31138";
+        version = "2026.816.134514";
         src = pkgs.fetchurl {
-          url = "https://api.canary.fluxer.app/dl/desktop/canary/linux/x64/2026.602.31138/appimage";
-          sha256 = "0dmfzd3x652w5dr3h39bkzlxvq3vr3lmyg2sxslqrjnn19dl10bp";
+          url = "https://api.canary.fluxer.app/dl/desktop/canary/linux/x64/2026.816.134514/appimage";
+          sha256 = "1g9yg06ld83r9bqfnl291xvdjjb9h0p71h60aqgqwawzbkb070pk";
         };
         extraInstallCommands = ''
           mkdir -p $out/share/applications
