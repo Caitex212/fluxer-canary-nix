@@ -24,7 +24,7 @@ https://api.canary.fluxer.app/dl/desktop/canary/linux/x64/latest/appimage
 ```
 Then I use this to get the hash:
 ```bash
-nix-prefetch-url https://api.canary.fluxer.app/dl/desktop/canary/linux/x64/2026.602.31138/appimage
+nix-prefetch-url https://api.canary.fluxer.app/dl/desktop/canary/linux/x64/2026.903.231208/appimage
 ```
 
 ## License
