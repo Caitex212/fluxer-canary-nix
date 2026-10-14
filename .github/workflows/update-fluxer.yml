@@ -1,0 +1,98 @@
+
+name: Update Fluxer Canary
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+
+      - name: Resolve latest version and hash
+        id: update
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          latest="https://api.canary.fluxer.app/dl/desktop/canary/linux/x64/latest/appimage"
+
+          url=$(curl -fsSL -o /dev/null -w '%{url_effective}' "$latest")
+
+          version=$(printf '%s\n' "$url" |
+            sed -nE 's|.*/linux/x64/([^/]+)/appimage$|\1|p')
+
+          if [[ -z "$version" ]]; then
+            echo "::error::Could not resolve a versioned download URL: $url"
+            exit 1
+          fi
+
+          hash=$(nix-prefetch-url "$url")
+
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "hash=$hash" >> "$GITHUB_OUTPUT"
+
+      - name: Update flake.nix
+        env:
+          VERSION: ${{ steps.update.outputs.version }}
+          URL: ${{ steps.update.outputs.url }}
+          HASH: ${{ steps.update.outputs.hash }}
+        run: |
+          python3 - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          path = Path("flake.nix")
+          text = path.read_text()
+
+          replacements = [
+              (r'version = "[^"]+";',
+               f'version = "{os.environ["VERSION"]}";'),
+              (r'url = "[^"]+/appimage";',
+               f'url = "{os.environ["URL"]}";'),
+              (r'sha256 = "[^"]+";',
+               f'sha256 = "{os.environ["HASH"]}";'),
+          ]
+
+          for pattern, replacement in replacements:
+              text, count = re.subn(pattern, replacement, text, count=1)
+              if count != 1:
+                  raise SystemExit(
+                      f"Expected exactly one match for {pattern}"
+                  )
+
+          path.write_text(text)
+          PY
+
+      - name: Validate package
+        run: nix build .#fluxer-canary --no-link
+
+      - name: Create update pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: automation/update-fluxer-canary
+          delete-branch: true
+          title: "chore: update Fluxer Canary"
+          commit-message: "chore: update Fluxer Canary"
+          body: |
+            Automated Fluxer Canary update.
+
+            The workflow resolved the latest upstream download,
+            refreshed the version and SHA-256 hash, and built
+            the package to validate the update.
+
