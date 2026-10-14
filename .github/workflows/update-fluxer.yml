@@ -99,18 +99,20 @@ jobs:
           echo "::error::Fluxer download or Nix build failed after 3 attempts"
           exit 1
 
-      - name: Create update pull request
-        uses: peter-evans/create-pull-request@v7
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: automation/update-fluxer-canary
-          delete-branch: true
-          title: "chore: update Fluxer Canary"
-          commit-message: "chore: update Fluxer Canary"
-          body: |
-            Automated Fluxer Canary update.
+      
+      - name: Commit and push update to main
+        run: |
+          set -euo pipefail
 
-            The workflow resolved the latest upstream download,
-            refreshed the version and SHA-256 hash, and built
-            the package to validate the update.
+          if git diff --quiet -- flake.nix; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add flake.nix
+          git commit -m "chore: update Fluxer Canary"
+          git push origin HEAD:main
 
