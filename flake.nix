@@ -5,13 +5,19 @@
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
+
+      # Pinned release. Both values are bumped together by
+      # .github/workflows/update-fluxer.yml - never edit one without the other.
+      version = "2026.1015.15314";
+      hash = pkgs.lib.fakeHash;
     in {
       packages.${system}.fluxer-canary = pkgs.appimageTools.wrapType2 {
         pname = "fluxer-canary";
-        version = "latest";
+        inherit version;
         src = pkgs.fetchurl {
-          url = "https://pkgs.fluxer.com/desktop/canary/linux/x64/latest/appimage";
-          sha256 = "1ikl0a8j9rdl7vmny4lqjhz2x49ds1x9cyw3qs2j8pb0k14pxnm5";
+          # Versioned URL: the bytes behind it never change, so the hash stays valid.
+          url = "https://pkgs.fluxer.com/desktop/canary/linux/x64/${version}/appimage";
+          inherit hash;
         };
         extraInstallCommands = ''
           mkdir -p $out/share/applications

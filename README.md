@@ -17,15 +17,21 @@ environment.systemPackages = [
 ];
 ```
 
-## Updating (Note to myself)
-I use this link to find out what the newest canary version is:
-```
-https://api.canary.fluxer.app/dl/desktop/canary/linux/x64/latest/appimage
-```
-Then I use this to get the hash:
+## Updating
+`flake.nix` pins an exact version and hash, so builds are reproducible and never
+fail with a hash mismatch when upstream publishes a new canary.
+
+A daily GitHub Action (`.github/workflows/update-fluxer.yml`) reads
+`https://pkgs.fluxer.com/desktop/canary/linux/x64/latest`, bumps `version` and
+`hash`, builds, and pushes.
+
+To update by hand:
 ```bash
-nix-prefetch-url https://api.canary.fluxer.app/dl/desktop/canary/linux/x64/2026.903.231208/appimage
+v=2026.1015.15314   # version from the latest metadata
+nix hash convert --hash-algo sha256 --to sri \
+  $(nix-prefetch-url https://pkgs.fluxer.com/desktop/canary/linux/x64/$v/appimage)
 ```
+Put the version and resulting hash in `flake.nix`.
 
 ## License
 MIT
