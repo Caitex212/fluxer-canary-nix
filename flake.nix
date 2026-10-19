@@ -11,7 +11,7 @@
         version = "latest";
         src = pkgs.fetchurl {
           url = "https://pkgs.fluxer.com/desktop/canary/linux/x64/latest/appimage";
-          sha256 = "0hm3s6fyqy527d885cmr89rj221z3c0g3hyrsa9p56xafar8y7zw";
+          sha256 = "1ikl0a8j9rdl7vmny4lqjhz2x49ds1x9cyw3qs2j8pb0k14pxnm5";
         };
         extraInstallCommands = ''
           mkdir -p $out/share/applications
