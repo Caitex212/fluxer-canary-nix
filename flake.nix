@@ -8,8 +8,8 @@
 
       # Pinned release. Both values are bumped together by
       # .github/workflows/update-fluxer.yml - never edit one without the other.
-      version = "2026.1018.223341";
-      hash = "sha256-pdp+SZhgXSSFxoN7lnrQLZEuPpSYEm/rPrTlJJECdMY=";
+      version = "2026.1025.12532";
+      hash = "sha256-4KFaK4yG+Hhtt9pVSepr1i77Mut+E6MkNZ0LpuhpsEg=";
     in {
       packages.${system}.fluxer-canary = pkgs.appimageTools.wrapType2 {
         pname = "fluxer-canary";
